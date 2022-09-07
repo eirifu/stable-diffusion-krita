@@ -569,7 +569,7 @@ def runSD(p: SDParameters):
                 "fn_index":8,
                 "data":[p.prompt,p.image64,None,p.steps,p.sampling_method,4,"latent noise",False,"Redraw whole image",
                         p.num,1,p.cfg_value,p.strength,seed,SDConfig.height,SDConfig.width,"Just resize","RealESRGAN",64,False,
-                        "Inpaint masked","None",8,4,"fill","Seed","","Steps","",False
+                        "Inpaint masked","None",8,4,"fill",False,"Seed","","Steps",""
                        ]
             }        
 
@@ -586,7 +586,7 @@ def runSD(p: SDParameters):
             j={
                 "fn_index":8,
                 "data":[p.prompt,None,{"image":p.image64,"mask":p.maskImage64},p.steps,"Euler a",4,"latent noise",False,"Inpaint a part of image",p.num,1,p.cfg_value,0.75,seed,512,512,
-                "Just resize","RealESRGAN",64,False,"Inpaint masked","None",8,4,"fill","Seed","","Steps","",False
+                "Just resize","RealESRGAN",64,False,"Inpaint masked","None",8,4,"fill",False,"Seed","","Steps",""
                        ]
             }    
    
@@ -594,7 +594,7 @@ def runSD(p: SDParameters):
     if (p.mode=="txt2img"):
         j={
             "fn_index":2,
-            "data":[p.prompt,"",p.steps,p.sampling_method,False,p.num,1,p.cfg_value,seed,SDConfig.height,SDConfig.width,"None","Seed","","Steps","",False]
+            "data":[p.prompt,"",p.steps,p.sampling_method,False,p.num,1,p.cfg_value,seed,SDConfig.height,SDConfig.width,"None",False,"Seed","","Steps",""]
         }           
 
     #print(j)
