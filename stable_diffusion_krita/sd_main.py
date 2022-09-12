@@ -129,7 +129,7 @@ class SDConfigDialog(QDialog):
         self.layout.addWidget(self.url)
         self.layout.addWidget(QLabel('Type'))
         self.type = QComboBox()
-        self.type.addItems(['Colab', 'Local'])
+        self.type.addItems(['Colab','GradioB', 'Local'])
         self.type.setCurrentText(SDConfig.type)
         self.layout.addWidget(self.type,stretch=1)      
         self.layout.addWidget(QLabel('For local experimental version you need this fork running <br> <a href="https://github.com/imperator-maximus/stable-diffusion-webui">imperator-maximus/stable-diffusion-webui</a><br>\nIf it gets connection error - this is known issue and I am working on it. If it works fine - let me know :)'))
@@ -548,8 +548,9 @@ def getServerData(reqData):
 
 def runSD(p: SDParameters):
     # dramatic interface change needed!
-    Colab=True
-    if (SDConfig.type=="Local"): Colab=False
+    Colab=0
+    if (SDConfig.type=="Colab"): Colab=1
+    if (SDConfig.type=="GradioB"): Colab=2
   
     if (not p.seed): seed=-1
     else: seed=int(p.seed)
@@ -564,14 +565,22 @@ def runSD(p: SDParameters):
             ]
         }
         # colab
-        if (Colab):
+        if (Colab==1):
+            j={
+                "fn_index":8,
+                "data":[p.prompt,p.image64,None,p.steps,p.sampling_method,4,"latent noise",False,"Redraw whole image",
+                        p.num,1,p.cfg_value,p.strength,seed,SDConfig.height,SDConfig.width,"Just resize","RealESRGAN",64,False,
+                        "Inpaint masked","None",8,4,"fill","Seed","","Steps","",False
+                ]
+            }     
+        if (Colab==2):
             j={
                 "fn_index":8,
                 "data":[p.prompt,p.image64,None,p.steps,p.sampling_method,4,"latent noise",False,"Redraw whole image",
                         p.num,1,p.cfg_value,p.strength,seed,SDConfig.height,SDConfig.width,"Just resize","RealESRGAN",64,False,
                         "Inpaint masked","None",8,4,"fill",False,"Seed","","Steps",""
                        ]
-            }        
+            }               
 
 
     if (p.mode=="inpainting"):
@@ -582,20 +591,32 @@ def runSD(p: SDParameters):
             "Just resize","RealESRGAN",64,False,"Inpaint masked","None",8,4,"fill",False,"Seed","","Steps",""]
         }            
         # colab
-        if (Colab):
+        if (Colab==1):
+            j={
+                "fn_index":8,
+                "data":[p.prompt,None,{"image":p.image64,"mask":p.maskImage64},p.steps,"Euler a",4,"latent noise",False,"Inpaint a part of image",p.num,1,p.cfg_value,0.75,seed,512,512,
+                "Just resize","RealESRGAN",64,False,"Inpaint masked","None",8,4,"fill","Seed","","Steps","",False]
+            }  
+
+        if (Colab==2):
             j={
                 "fn_index":8,
                 "data":[p.prompt,None,{"image":p.image64,"mask":p.maskImage64},p.steps,"Euler a",4,"latent noise",False,"Inpaint a part of image",p.num,1,p.cfg_value,0.75,seed,512,512,
                 "Just resize","RealESRGAN",64,False,"Inpaint masked","None",8,4,"fill",False,"Seed","","Steps",""
                        ]
-            }    
+            }              
    
 
     if (p.mode=="txt2img"):
         j={
             "fn_index":2,
             "data":[p.prompt,"",p.steps,p.sampling_method,False,p.num,1,p.cfg_value,seed,SDConfig.height,SDConfig.width,"None",False,"Seed","","Steps",""]
-        }           
+        }   
+        if (Colab==1):
+            j={
+                "fn_index":2,
+                "data":[p.prompt,"",p.steps,p.sampling_method,False,p.num,1,p.cfg_value,seed,SDConfig.height,SDConfig.width,"None","Seed","","Steps","",False]
+            }           
 
     #print(j)
     data = json.dumps(j).encode("utf-8")
